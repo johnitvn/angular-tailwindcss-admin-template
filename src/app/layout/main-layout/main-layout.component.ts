@@ -10,26 +10,36 @@ import { LayoutService } from '../../services/layout.service';
   standalone: true,
   imports: [CommonModule, RouterOutlet, SidebarComponent, HeaderComponent],
   template: `
-    <div class="min-h-screen bg-dark-900 flex">
-      <!-- Sidebar -->
-      <app-sidebar></app-sidebar>
+    <div class="min-h-screen bg-dark-900">
+      <!-- Fixed Header -->
+      <app-header class="fixed top-0 left-0 right-0 z-40"></app-header>
       
-      <!-- Main Content -->
-      <div class="flex-1 flex flex-col transition-all duration-300">
-        
-        <!-- Header -->
-        <app-header></app-header>
-        
-        <!-- Page Content -->
-        <main class="flex-1 overflow-auto">
+      <!-- Fixed Sidebar -->
+      <app-sidebar class="fixed top-[4.5rem] left-0 bottom-0 z-30"></app-sidebar>
+      
+      <!-- Main Content Area -->
+      <main 
+        class="fixed top-[4.5rem] bottom-0 right-0 overflow-y-auto bg-dark-900 transition-all duration-300"
+        [class.left-64]="!layoutService.sidebarCollapsed()"
+        [class.left-16]="layoutService.sidebarCollapsed()"
+        [class.left-0]="layoutService.sidebarOpen() && window.innerWidth < 1024">
+        <div class="min-h-full">
           <router-outlet></router-outlet>
-        </main>
+        </div>
+      </main>
+      
+      <!-- Mobile Overlay -->
+      <div 
+        *ngIf="layoutService.sidebarOpen() && window.innerWidth < 1024" 
+        class="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+        (click)="layoutService.closeSidebar()">
       </div>
     </div>
   `
 })
 export class MainLayoutComponent implements OnInit {
   layoutService = inject(LayoutService);
+  window = window;
 
   ngOnInit() {
     this.checkScreenSize();

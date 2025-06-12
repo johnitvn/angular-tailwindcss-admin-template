@@ -7,8 +7,8 @@ import { LayoutService } from '../../services/layout.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <header class="bg-dark-800 border-b border-dark-700">
-      <div class="flex items-center justify-between h-[4.5rem] px-4 lg:px-6" [ngClass]="{'lg:h-20': !layoutService.sidebarCollapsed()}">
+    <header class="w-full h-[4.5rem] bg-dark-800 border-b border-dark-700 z-40">
+      <div class="flex items-center justify-between h-full px-4 lg:px-6">
         <!-- Left section -->
         <div class="flex items-center gap-4">
           <!-- Mobile menu button -->

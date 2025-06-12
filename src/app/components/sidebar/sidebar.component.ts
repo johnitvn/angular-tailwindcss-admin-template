@@ -14,60 +14,90 @@ import { DomSanitizer } from '@angular/platform-browser';
     <!-- Mobile overlay -->
     <div 
       *ngIf="layoutService.sidebarOpen()" 
-      class="mobile-overlay"
+      class="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden"
       (click)="layoutService.closeSidebar()">
     </div>
 
     <!-- Sidebar -->
     <aside 
-      class="fixed left-0 top-0 z-50 h-screen w-64 transform bg-dark-800 border-r border-dark-700 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto"
+      class="w-64 h-full bg-dark-800 border-r border-dark-700 transform transition-all duration-300 ease-in-out lg:translate-x-0 overflow-y-auto"
       [class.translate-x-0]="layoutService.sidebarOpen()"
       [class.-translate-x-full]="!layoutService.sidebarOpen()"
-      [class.lg:w-16]="layoutService.sidebarCollapsed()"
-      [class.lg:w-64]="!layoutService.sidebarCollapsed()">
+      [class.lg:w-16]="layoutService.sidebarCollapsed() && !isHovered"
+      [class.lg:w-64]="!layoutService.sidebarCollapsed() || isHovered"
+      [class.lg:shadow-2xl]="layoutService.sidebarCollapsed() && isHovered"
+      [class.lg:shadow-primary]="layoutService.sidebarCollapsed() && isHovered"
+      (mouseenter)="onMouseEnter()"
+      (mouseleave)="onMouseLeave()">
       
       <!-- Sidebar Header -->
-      <header class="flex items-center justify-between border-b border-dark-700">
-        <div class="flex items-center w-full h-[4.5rem]" [ngClass]="{'justify-center':layoutService.sidebarCollapsed(), 'lg:h-20 gap-3 px-4 py-4 ':!layoutService.sidebarCollapsed()}">
-          <div class="flex items-center justify-center w-10 h-10 bg-primary-600 rounded-lg">
+      <header class="flex items-center justify-between border-b border-dark-700 flex-shrink-0">
+        <div class="flex items-center w-full h-16 transition-all duration-300" 
+             [ngClass]="{
+               'justify-center': layoutService.sidebarCollapsed() && !isHovered, 
+               'gap-3 px-4 py-4': !layoutService.sidebarCollapsed() || isHovered
+             }">
+          <div class="flex items-center justify-center w-10 h-10 bg-primary-600 rounded-lg flex-shrink-0">
             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
             </svg>
           </div>
           <span 
-            *ngIf="!layoutService.sidebarCollapsed()" 
-            class="text-xl font-bold text-white">
+            class="text-xl font-bold text-white transition-all duration-300 overflow-hidden whitespace-nowrap"
+            [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+            [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+            [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+            [class.ml-0]="layoutService.sidebarCollapsed() && !isHovered"
+            [class.ml-3]="!layoutService.sidebarCollapsed() || isHovered">
             TailAdmin
           </span>
         </div>        
       </header>
 
       <!-- Navigation -->
-      <nav class="flex-1 overflow-y-auto py-6" [ngClass]="{'px-4':!layoutService.sidebarCollapsed()}">
+      <nav class="flex-1 py-6 transition-all duration-300" 
+           [ngClass]="{'px-4': !layoutService.sidebarCollapsed() || isHovered, 'px-2': layoutService.sidebarCollapsed() && !isHovered}">
+        
         <!-- Menu Label -->
-        <div *ngIf="!layoutService.sidebarCollapsed()" class="mb-4">
+        <div class="mb-4 transition-all duration-300 overflow-hidden"
+             [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+             [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+             [class.h-0]="layoutService.sidebarCollapsed() && !isHovered"
+             [class.h-auto]="!layoutService.sidebarCollapsed() || isHovered">
           <span class="text-xs font-semibold text-dark-400 uppercase tracking-wider">MENU</span>
         </div>
 
         <!-- Primary Navigation -->
         <ul class="space-y-2 mb-8">
           <li *ngFor="let item of primaryNavItems">
-            <div [ngClass]="{'flex justify-center':layoutService.sidebarCollapsed()}">
+            <div [ngClass]="{'flex justify-center': layoutService.sidebarCollapsed() && !isHovered}">
               <ng-container *ngIf="!item.children || item.children.length === 0; else hasChildren">
                 <a 
                   [routerLink]="item.route"
-                  class="sidebar-item group"
+                  class="sidebar-item group transition-all duration-300"
                   [class.active]="isMenuItemActive(item)"
-                  [title]="layoutService.sidebarCollapsed() ? item.title : ''">
+                  [class.justify-center]="layoutService.sidebarCollapsed() && !isHovered"
+                  [class.w-12]="layoutService.sidebarCollapsed() && !isHovered"
+                  [class.h-12]="layoutService.sidebarCollapsed() && !isHovered"
+                  [title]="(layoutService.sidebarCollapsed() && !isHovered) ? item.title : ''">
                   
                   <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
                   
-                  <span *ngIf="!layoutService.sidebarCollapsed()" class="flex-1">
+                  <span class="flex-1 transition-all duration-300 overflow-hidden whitespace-nowrap"
+                        [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                        [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.ml-0]="layoutService.sidebarCollapsed() && !isHovered">
                     {{ item.title }}
                   </span>
                   
-                  <span *ngIf="item.badge && !layoutService.sidebarCollapsed()" 
-                        [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'">
+                  <span *ngIf="item.badge" 
+                        class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+                        [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'"
+                        [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                        [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.scale-0]="layoutService.sidebarCollapsed() && !isHovered">
                     {{ item.badge }}
                   </span>
                 </a>
@@ -77,31 +107,46 @@ import { DomSanitizer } from '@angular/platform-browser';
                 <div class="w-full">
                   <button 
                     (click)="toggleSubmenu(item.id)"
-                    class="sidebar-item group w-full"
+                    class="sidebar-item group w-full transition-all duration-300"
                     [class.active]="isParentMenuActive(item) || layoutService.isMenuExpanded(item.id)"
-                    [title]="layoutService.sidebarCollapsed() ? item.title : ''">
+                    [class.justify-center]="layoutService.sidebarCollapsed() && !isHovered"
+                    [class.w-12]="layoutService.sidebarCollapsed() && !isHovered"
+                    [class.h-12]="layoutService.sidebarCollapsed() && !isHovered"
+                    [title]="(layoutService.sidebarCollapsed() && !isHovered) ? item.title : ''">
                     
                     <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
                     
-                    <span *ngIf="!layoutService.sidebarCollapsed()" class="flex-1 text-left">
+                    <span class="flex-1 text-left transition-all duration-300 overflow-hidden whitespace-nowrap"
+                          [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                          [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.ml-0]="layoutService.sidebarCollapsed() && !isHovered">
                       {{ item.title }}
                     </span>
                     
-                    <span *ngIf="item.badge && !layoutService.sidebarCollapsed()" 
-                          [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'">
+                    <span *ngIf="item.badge" 
+                          class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+                          [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'"
+                          [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                          [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.scale-0]="layoutService.sidebarCollapsed() && !isHovered">
                       {{ item.badge }}
                     </span>
                     
-                    <svg *ngIf="!layoutService.sidebarCollapsed()"
-                         class="w-4 h-4 transition-transform duration-200"
+                    <svg class="w-4 h-4 transition-all duration-300"
                          [class.rotate-90]="layoutService.isMenuExpanded(item.id)"
+                         [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                         [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                         [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                         [class.scale-0]="layoutService.sidebarCollapsed() && !isHovered"
                          fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                     </svg>
                   </button>
 
                   <!-- Submenu -->
-                  <div *ngIf="layoutService.isMenuExpanded(item.id) && !layoutService.sidebarCollapsed()" 
+                  <div *ngIf="layoutService.isMenuExpanded(item.id) && (!layoutService.sidebarCollapsed() || isHovered)" 
                        class="submenu-container">
                     <ul class="submenu">
                       <li *ngFor="let child of item.children">
@@ -127,22 +172,34 @@ import { DomSanitizer } from '@angular/platform-browser';
         <!-- Secondary Navigation -->
         <ul class="space-y-2 mb-8">
           <li *ngFor="let item of secondaryNavItems">
-            <div [ngClass]="{'flex justify-center':layoutService.sidebarCollapsed()}">
+            <div [ngClass]="{'flex justify-center': layoutService.sidebarCollapsed() && !isHovered}">
               <ng-container *ngIf="!item.children || item.children.length === 0; else hasSecondaryChildren">
                 <a 
                   [routerLink]="item.route"
-                  class="sidebar-item"
+                  class="sidebar-item transition-all duration-300"
                   [class.active]="isMenuItemActive(item)"
-                  [title]="layoutService.sidebarCollapsed() ? item.title : ''">
+                  [class.justify-center]="layoutService.sidebarCollapsed() && !isHovered"
+                  [class.w-12]="layoutService.sidebarCollapsed() && !isHovered"
+                  [class.h-12]="layoutService.sidebarCollapsed() && !isHovered"
+                  [title]="(layoutService.sidebarCollapsed() && !isHovered) ? item.title : ''">
                   
                   <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
                   
-                  <span *ngIf="!layoutService.sidebarCollapsed()" class="flex-1">
+                  <span class="flex-1 transition-all duration-300 overflow-hidden whitespace-nowrap"
+                        [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                        [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.ml-0]="layoutService.sidebarCollapsed() && !isHovered">
                     {{ item.title }}
                   </span>
                   
-                  <span *ngIf="item.badge && !layoutService.sidebarCollapsed()" 
-                        [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'">
+                  <span *ngIf="item.badge" 
+                        class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+                        [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'"
+                        [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                        [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.scale-0]="layoutService.sidebarCollapsed() && !isHovered">
                     {{ item.badge }}
                   </span>
                 </a>
@@ -152,31 +209,46 @@ import { DomSanitizer } from '@angular/platform-browser';
                 <div class="w-full">
                   <button 
                     (click)="toggleSubmenu(item.id)"
-                    class="sidebar-item group w-full"
+                    class="sidebar-item group w-full transition-all duration-300"
                     [class.active]="isParentMenuActive(item) || layoutService.isMenuExpanded(item.id)"
-                    [title]="layoutService.sidebarCollapsed() ? item.title : ''">
+                    [class.justify-center]="layoutService.sidebarCollapsed() && !isHovered"
+                    [class.w-12]="layoutService.sidebarCollapsed() && !isHovered"
+                    [class.h-12]="layoutService.sidebarCollapsed() && !isHovered"
+                    [title]="(layoutService.sidebarCollapsed() && !isHovered) ? item.title : ''">
                     
                     <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
                     
-                    <span *ngIf="!layoutService.sidebarCollapsed()" class="flex-1 text-left">
+                    <span class="flex-1 text-left transition-all duration-300 overflow-hidden whitespace-nowrap"
+                          [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                          [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.ml-0]="layoutService.sidebarCollapsed() && !isHovered">
                       {{ item.title }}
                     </span>
                     
-                    <span *ngIf="item.badge && !layoutService.sidebarCollapsed()" 
-                          [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'">
+                    <span *ngIf="item.badge" 
+                          class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+                          [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'"
+                          [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                          [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.scale-0]="layoutService.sidebarCollapsed() && !isHovered">
                       {{ item.badge }}
                     </span>
                     
-                    <svg *ngIf="!layoutService.sidebarCollapsed()"
-                         class="w-4 h-4 transition-transform duration-200"
+                    <svg class="w-4 h-4 transition-all duration-300"
                          [class.rotate-90]="layoutService.isMenuExpanded(item.id)"
+                         [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                         [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                         [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                         [class.scale-0]="layoutService.sidebarCollapsed() && !isHovered"
                          fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                     </svg>
                   </button>
 
                   <!-- Submenu -->
-                  <div *ngIf="layoutService.isMenuExpanded(item.id) && !layoutService.sidebarCollapsed()" 
+                  <div *ngIf="layoutService.isMenuExpanded(item.id) && (!layoutService.sidebarCollapsed() || isHovered)" 
                        class="submenu-container">
                     <ul class="submenu">
                       <li *ngFor="let child of item.children">
@@ -200,28 +272,44 @@ import { DomSanitizer } from '@angular/platform-browser';
         </ul>
 
         <!-- Support Section -->
-        <div *ngIf="!layoutService.sidebarCollapsed()" class="mb-4">
+        <div class="mb-4 transition-all duration-300 overflow-hidden"
+             [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+             [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+             [class.h-0]="layoutService.sidebarCollapsed() && !isHovered"
+             [class.h-auto]="!layoutService.sidebarCollapsed() || isHovered">
           <span class="text-xs font-semibold text-dark-400 uppercase tracking-wider">SUPPORT</span>
         </div>
         
         <ul class="space-y-2">
           <li *ngFor="let item of supportNavItems">
-            <div [ngClass]="{'flex justify-center':layoutService.sidebarCollapsed()}">
+            <div [ngClass]="{'flex justify-center': layoutService.sidebarCollapsed() && !isHovered}">
               <ng-container *ngIf="!item.children || item.children.length === 0; else hasSupportChildren">
                 <a 
                   [routerLink]="item.route"
-                  class="sidebar-item"
+                  class="sidebar-item transition-all duration-300"
                   [class.active]="isMenuItemActive(item)"
-                  [title]="layoutService.sidebarCollapsed() ? item.title : ''">
+                  [class.justify-center]="layoutService.sidebarCollapsed() && !isHovered"
+                  [class.w-12]="layoutService.sidebarCollapsed() && !isHovered"
+                  [class.h-12]="layoutService.sidebarCollapsed() && !isHovered"
+                  [title]="(layoutService.sidebarCollapsed() && !isHovered) ? item.title : ''">
                   
                   <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
                   
-                  <span *ngIf="!layoutService.sidebarCollapsed()" class="flex-1">
+                  <span class="flex-1 transition-all duration-300 overflow-hidden whitespace-nowrap"
+                        [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                        [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.ml-0]="layoutService.sidebarCollapsed() && !isHovered">
                     {{ item.title }}
                   </span>
                   
-                  <span *ngIf="item.badge && !layoutService.sidebarCollapsed()" 
-                        [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'">
+                  <span *ngIf="item.badge" 
+                        class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+                        [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'"
+                        [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                        [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                        [class.scale-0]="layoutService.sidebarCollapsed() && !isHovered">
                     {{ item.badge }}
                   </span>
                 </a>
@@ -231,31 +319,46 @@ import { DomSanitizer } from '@angular/platform-browser';
                 <div class="w-full">
                   <button 
                     (click)="toggleSubmenu(item.id)"
-                    class="sidebar-item group w-full"
+                    class="sidebar-item group w-full transition-all duration-300"
                     [class.active]="isParentMenuActive(item) || layoutService.isMenuExpanded(item.id)"
-                    [title]="layoutService.sidebarCollapsed() ? item.title : ''">
+                    [class.justify-center]="layoutService.sidebarCollapsed() && !isHovered"
+                    [class.w-12]="layoutService.sidebarCollapsed() && !isHovered"
+                    [class.h-12]="layoutService.sidebarCollapsed() && !isHovered"
+                    [title]="(layoutService.sidebarCollapsed() && !isHovered) ? item.title : ''">
                     
                     <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
                     
-                    <span *ngIf="!layoutService.sidebarCollapsed()" class="flex-1 text-left">
+                    <span class="flex-1 text-left transition-all duration-300 overflow-hidden whitespace-nowrap"
+                          [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                          [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.ml-0]="layoutService.sidebarCollapsed() && !isHovered">
                       {{ item.title }}
                     </span>
                     
-                    <span *ngIf="item.badge && !layoutService.sidebarCollapsed()" 
-                          [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'">
+                    <span *ngIf="item.badge" 
+                          class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+                          [class]="item.badge === 'PRO' ? 'pro-badge' : 'new-badge'"
+                          [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                          [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                          [class.scale-0]="layoutService.sidebarCollapsed() && !isHovered">
                       {{ item.badge }}
                     </span>
                     
-                    <svg *ngIf="!layoutService.sidebarCollapsed()"
-                         class="w-4 h-4 transition-transform duration-200"
+                    <svg class="w-4 h-4 transition-all duration-300"
                          [class.rotate-90]="layoutService.isMenuExpanded(item.id)"
+                         [class.opacity-0]="layoutService.sidebarCollapsed() && !isHovered"
+                         [class.opacity-100]="!layoutService.sidebarCollapsed() || isHovered"
+                         [class.w-0]="layoutService.sidebarCollapsed() && !isHovered"
+                         [class.scale-0]="layoutService.sidebarCollapsed() && !isHovered"
                          fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                     </svg>
                   </button>
 
                   <!-- Submenu -->
-                  <div *ngIf="layoutService.isMenuExpanded(item.id) && !layoutService.sidebarCollapsed()" 
+                  <div *ngIf="layoutService.isMenuExpanded(item.id) && (!layoutService.sidebarCollapsed() || isHovered)" 
                        class="submenu-container">
                     <ul class="submenu">
                       <li *ngFor="let child of item.children">
@@ -348,6 +451,18 @@ import { DomSanitizer } from '@angular/platform-browser';
     .new-badge {
       @apply bg-green-600 text-white text-xs px-2 py-1 rounded-md font-medium;
     }
+
+    /* Hover expansion styles */
+    aside:hover {
+      @apply lg:shadow-2xl lg:shadow-primary-500/10;
+    }
+
+    /* Smooth transitions for all elements */
+    .sidebar-item,
+    .sidebar-item span,
+    .sidebar-item svg {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
   `]
 })
 export class SidebarComponent implements OnInit {
@@ -358,14 +473,26 @@ export class SidebarComponent implements OnInit {
   secondaryNavItems: NavigationItem[] = secondaryNavigationItems;
   supportNavItems: NavigationItem[] = supportNavigationItems;
 
+  isHovered = false;
+
   ngOnInit() {
     // Refresh menu state on component initialization
     this.layoutService.refreshMenuState();
   }
 
-  toggleSubmenu(menuId: string) {
-    // Don't toggle if sidebar is collapsed
+  onMouseEnter() {
     if (this.layoutService.sidebarCollapsed()) {
+      this.isHovered = true;
+    }
+  }
+
+  onMouseLeave() {
+    this.isHovered = false;
+  }
+
+  toggleSubmenu(menuId: string) {
+    // Don't toggle if sidebar is collapsed and not hovered
+    if (this.layoutService.sidebarCollapsed() && !this.isHovered) {
       return;
     }
     this.layoutService.toggleMenu(menuId);
