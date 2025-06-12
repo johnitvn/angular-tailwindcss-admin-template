@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LayoutService } from '../../services/layout.service';
@@ -56,9 +56,8 @@ import { DomSanitizer } from '@angular/platform-browser';
               <ng-container *ngIf="!item.children || item.children.length === 0; else hasChildren">
                 <a 
                   [routerLink]="item.route"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{exact: false}"
                   class="sidebar-item group"
+                  [class.active]="isMenuItemActive(item)"
                   [title]="layoutService.sidebarCollapsed() ? item.title : ''">
                   
                   <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
@@ -79,7 +78,7 @@ import { DomSanitizer } from '@angular/platform-browser';
                   <button 
                     (click)="toggleSubmenu(item.id)"
                     class="sidebar-item group w-full"
-                    [class.active]="layoutService.isMenuExpanded(item.id)"
+                    [class.active]="isParentMenuActive(item) || layoutService.isMenuExpanded(item.id)"
                     [title]="layoutService.sidebarCollapsed() ? item.title : ''">
                     
                     <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
@@ -108,8 +107,8 @@ import { DomSanitizer } from '@angular/platform-browser';
                       <li *ngFor="let child of item.children">
                         <a 
                           [routerLink]="child.route"
-                          routerLinkActive="active"
-                          class="submenu-item">
+                          class="submenu-item"
+                          [class.active]="isMenuItemActive(child)">
                           {{ child.title }}
                           <span *ngIf="child.badge" 
                                 [class]="child.badge === 'PRO' ? 'pro-badge' : 'new-badge'">
@@ -132,8 +131,8 @@ import { DomSanitizer } from '@angular/platform-browser';
               <ng-container *ngIf="!item.children || item.children.length === 0; else hasSecondaryChildren">
                 <a 
                   [routerLink]="item.route"
-                  routerLinkActive="active"
                   class="sidebar-item"
+                  [class.active]="isMenuItemActive(item)"
                   [title]="layoutService.sidebarCollapsed() ? item.title : ''">
                   
                   <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
@@ -154,7 +153,7 @@ import { DomSanitizer } from '@angular/platform-browser';
                   <button 
                     (click)="toggleSubmenu(item.id)"
                     class="sidebar-item group w-full"
-                    [class.active]="layoutService.isMenuExpanded(item.id)"
+                    [class.active]="isParentMenuActive(item) || layoutService.isMenuExpanded(item.id)"
                     [title]="layoutService.sidebarCollapsed() ? item.title : ''">
                     
                     <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
@@ -183,8 +182,8 @@ import { DomSanitizer } from '@angular/platform-browser';
                       <li *ngFor="let child of item.children">
                         <a 
                           [routerLink]="child.route"
-                          routerLinkActive="active"
-                          class="submenu-item">
+                          class="submenu-item"
+                          [class.active]="isMenuItemActive(child)">
                           {{ child.title }}
                           <span *ngIf="child.badge" 
                                 [class]="child.badge === 'PRO' ? 'pro-badge' : 'new-badge'">
@@ -211,8 +210,8 @@ import { DomSanitizer } from '@angular/platform-browser';
               <ng-container *ngIf="!item.children || item.children.length === 0; else hasSupportChildren">
                 <a 
                   [routerLink]="item.route"
-                  routerLinkActive="active"
                   class="sidebar-item"
+                  [class.active]="isMenuItemActive(item)"
                   [title]="layoutService.sidebarCollapsed() ? item.title : ''">
                   
                   <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
@@ -233,7 +232,7 @@ import { DomSanitizer } from '@angular/platform-browser';
                   <button 
                     (click)="toggleSubmenu(item.id)"
                     class="sidebar-item group w-full"
-                    [class.active]="layoutService.isMenuExpanded(item.id)"
+                    [class.active]="isParentMenuActive(item) || layoutService.isMenuExpanded(item.id)"
                     [title]="layoutService.sidebarCollapsed() ? item.title : ''">
                     
                     <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(item.icon)" class="flex-shrink-0 w-5 h-5"></span>
@@ -262,8 +261,8 @@ import { DomSanitizer } from '@angular/platform-browser';
                       <li *ngFor="let child of item.children">
                         <a 
                           [routerLink]="child.route"
-                          routerLinkActive="active"
-                          class="submenu-item">
+                          class="submenu-item"
+                          [class.active]="isMenuItemActive(child)">
                           {{ child.title }}
                           <span *ngIf="child.badge" 
                                 [class]="child.badge === 'PRO' ? 'pro-badge' : 'new-badge'">
@@ -351,7 +350,7 @@ import { DomSanitizer } from '@angular/platform-browser';
     }
   `]
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   layoutService = inject(LayoutService);
   sanitizer = inject(DomSanitizer);
   
@@ -359,11 +358,30 @@ export class SidebarComponent {
   secondaryNavItems: NavigationItem[] = secondaryNavigationItems;
   supportNavItems: NavigationItem[] = supportNavigationItems;
 
+  ngOnInit() {
+    // Refresh menu state on component initialization
+    this.layoutService.refreshMenuState();
+  }
+
   toggleSubmenu(menuId: string) {
     // Don't toggle if sidebar is collapsed
     if (this.layoutService.sidebarCollapsed()) {
       return;
     }
     this.layoutService.toggleMenu(menuId);
+  }
+
+  /**
+   * Check if a menu item is active based on current URL
+   */
+  isMenuItemActive(item: NavigationItem): boolean {
+    return this.layoutService.isMenuItemActive(item.route);
+  }
+
+  /**
+   * Check if a parent menu has active children
+   */
+  isParentMenuActive(item: NavigationItem): boolean {
+    return this.layoutService.isParentMenuActive(item.children);
   }
 }

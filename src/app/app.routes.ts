@@ -52,11 +52,11 @@ export const routes: Routes = [
       },
       {
         path: 'task/list',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./pages/task-list/task-list.component').then(m => m.TaskListComponent)
       },
       {
         path: 'task/kanban',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./pages/task-kanban/task-kanban.component').then(m => m.TaskKanbanComponent)
       },
       {
         path: 'forms',
