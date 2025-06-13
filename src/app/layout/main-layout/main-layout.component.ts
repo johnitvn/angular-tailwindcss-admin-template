@@ -590,12 +590,21 @@ import { DomSanitizer } from '@angular/platform-browser';
     .focus-ring {
       @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-800;
     }
+
+    .pro-badge {
+      @apply bg-primary-600 text-white text-xs px-2 py-1 rounded-md font-medium;
+    }
+
+    .new-badge {
+      @apply bg-green-600 text-white text-xs px-2 py-1 rounded-md font-medium;
+    }
+
   `]
 })
 export class MainLayoutComponent implements OnInit {
   layoutService = inject(LayoutService);
   sanitizer = inject(DomSanitizer);
-  
+
   primaryNavItems: NavigationItem[] = navigationItems;
   secondaryNavItems: NavigationItem[] = secondaryNavigationItems;
   supportNavItems: NavigationItem[] = supportNavigationItems;
@@ -615,7 +624,7 @@ export class MainLayoutComponent implements OnInit {
 
   private checkScreenSize() {
     this.isSmallScreen = window.innerWidth < 1024;
-    
+
     // Auto-close sidebar on desktop
     if (!this.isSmallScreen) {
       this.layoutService.closeSidebar();
