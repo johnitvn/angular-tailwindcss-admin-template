@@ -1,10 +1,10 @@
 import { Component, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
-import { LayoutService } from '../../services/layout.service';
-import { navigationItems, secondaryNavigationItems, supportNavigationItems } from '../../data/navigation.data';
-import { NavigationItem } from '../../interfaces/navigation.interface';
 import { DomSanitizer } from '@angular/platform-browser';
+import { LayoutService } from './layout.service';
+import { NavigationItem, navigationItems, secondaryNavigationItems, supportNavigationItems } from './data';
+
 
 @Component({
   selector: 'app-main-layout',

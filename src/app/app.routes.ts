@@ -3,80 +3,87 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./layout/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
+    loadComponent: () => import('./layout.component').then(m => m.MainLayoutComponent),
     children: [
       {
         path: '',
-        redirectTo: 'blank-page',
+        redirectTo: 'dashboard',
         pathMatch: 'full'
       },
       {
-        path: 'blank-page',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
-      },
-      {
         path: 'dashboard',
-        loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
       },
       {
         path: 'analytics',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
       },
       {
         path: 'marketing',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
       },
       {
         path: 'crm',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
+
       },
       {
         path: 'stocks',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
+
       },
       {
         path: 'saas',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
       },
       {
         path: 'calendar',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
+
       },
       {
         path: 'user-profile',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
+
       },
       {
         path: 'task',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
-      },
-      {
-        path: 'task/list',
-        loadComponent: () => import('./pages/task-list/task-list.component').then(m => m.TaskListComponent)
-      },
-      {
-        path: 'task/kanban',
-        loadComponent: () => import('./pages/task-kanban/task-kanban.component').then(m => m.TaskKanbanComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent),
+        children: [
+          {
+            path: 'list',
+            loadComponent: () => import('./page.component').then(m => m.PageComponent),
+          },
+          {
+            path: 'kanban',
+            loadComponent: () => import('./page.component').then(m => m.PageComponent),
+          },
+        ]
       },
       {
         path: 'forms',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
+
       },
       {
         path: 'tables',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
+
       },
       {
         path: 'pages',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
+
       },
       {
         path: 'chat',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
+
       },
       {
         path: 'email',
-        loadComponent: () => import('./pages/blank-page/blank-page.component').then(m => m.BlankPageComponent)
+        loadComponent: () => import('./page.component').then(m => m.PageComponent)
+
       }
     ]
   },

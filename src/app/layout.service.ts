@@ -112,7 +112,7 @@ export class LayoutService {
     const cleanUrl = this.cleanUrl(url);
 
     // Import navigation data to check against
-    import('../data/navigation.data').then(({ navigationItems, secondaryNavigationItems, supportNavigationItems }) => {
+    import('./data').then(({ navigationItems, secondaryNavigationItems, supportNavigationItems }) => {
       const allMenus = [...navigationItems, ...secondaryNavigationItems, ...supportNavigationItems];
       
       // Check each menu and its children
