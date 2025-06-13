@@ -11,22 +11,9 @@ import { DomSanitizer } from '@angular/platform-browser';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <!-- Mobile overlay -->
-    <div 
-      *ngIf="layoutService.sidebarOpen()" 
-      class="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden"
-      (click)="layoutService.closeSidebar()">
-    </div>
-
-    <!-- Sidebar -->
+    <!-- Sidebar Container -->
     <aside 
-      class="w-64 h-full bg-dark-800 border-r border-dark-700 transform transition-all duration-300 ease-in-out lg:translate-x-0 overflow-y-auto"
-      [class.translate-x-0]="layoutService.sidebarOpen()"
-      [class.-translate-x-full]="!layoutService.sidebarOpen()"
-      [class.lg:w-16]="layoutService.sidebarCollapsed() && !isHovered"
-      [class.lg:w-64]="!layoutService.sidebarCollapsed() || isHovered"
-      [class.lg:shadow-2xl]="layoutService.sidebarCollapsed() && isHovered"
-      [class.lg:shadow-primary]="layoutService.sidebarCollapsed() && isHovered"
+      class="h-full bg-dark-800 border-r border-dark-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden"
       (mouseenter)="onMouseEnter()"
       (mouseleave)="onMouseLeave()">
       
@@ -54,8 +41,8 @@ import { DomSanitizer } from '@angular/platform-browser';
         </div>        
       </header>
 
-      <!-- Navigation -->
-      <nav class="flex-1 py-6 transition-all duration-300" 
+      <!-- Navigation - Scrollable -->
+      <nav class="flex-1 overflow-y-auto py-6 transition-all duration-300" 
            [ngClass]="{'px-4': !layoutService.sidebarCollapsed() || isHovered, 'px-2': layoutService.sidebarCollapsed() && !isHovered}">
         
         <!-- Menu Label -->
